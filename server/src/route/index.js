@@ -2,6 +2,7 @@
 
 const cors = require('cors');
 const healthCheckRoute = require('./health-check-route');
+const locationsRoute = require('./locations-route');
 /**
  * Routing general setup
  * @param  {express} app  the express obj
@@ -21,6 +22,7 @@ let routes = (app) => {
     });
 
     healthCheckRoute(app);
+    locationsRoute(app);
 };
 
 module.exports = routes;
