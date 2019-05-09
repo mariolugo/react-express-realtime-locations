@@ -1,42 +1,72 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 // Externals
 import PropTypes from "prop-types";
 
 // Material helpers
 import { withStyles } from "@material-ui/core/styles";
+import { connect } from "react-redux";
+import { locationOperations } from "../../../state/ducks/locations";
+import compose from "recompose/compose";
 
 // Material components
 import Paper from "@material-ui/core/Paper";
-
+import Snackbar from "@material-ui/core/Snackbar";
+import Typography from "@material-ui/core/Typography";
 // Cesium
 import { Viewer, Entity, EntityDescription } from "resium";
 import { Cartesian3 } from "cesium";
 
-const position = Cartesian3.fromDegrees(-74.0707383, 40.7117244, 100);
-const position2 = Cartesian3.fromDegrees(-75.0707383, 41.7117244, 100);
 const pointGraphics = { pixelSize: 10 };
 
 function Map(props) {
-  const { classes } = props;
+  const { classes, fetchLocations } = props;
+  const { locations, isFetching } = props.locations;
+  console.log("props", props);
+
+  const [open, setOpen] = useState(true);
+
+  useEffect(() => {
+    fetchLocations();
+  }, []);
+
+  let entities = [];
+
+  if (typeof locations !== "undefined" && locations.length > 0) {
+    locations.forEach((location, index) => {
+      // set longitude, location and constant height from location
+      const position = Cartesian3.fromDegrees(
+        location.longitude,
+        location.latitude,
+        100
+      );
+      entities.push(
+        <Entity position={position} selected={location.status} point={pointGraphics} key={index}>
+          <EntityDescription>
+            <Typography variant="h3">{location.name}</Typography>
+            <Typography variant="h4">{location.description}</Typography>
+          </EntityDescription>
+        </Entity>
+      );
+    });
+  }
+
+  function handleClose() {
+    setOpen(false);
+  }
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <Viewer>
-          <Entity position={position} point={pointGraphics}>
-            <EntityDescription>
-              <h1>Hello!</h1>
-              <p>This is description. It can be described with JSX!</p>
-            </EntityDescription>
-          </Entity>
-          <Entity position={position2} point={pointGraphics}>
-            <EntityDescription>
-              <h1>Hello!</h1>
-              <p>This is description. It can be described with JSX!</p>
-            </EntityDescription>
-          </Entity>
-        </Viewer>
+        <Viewer>{entities}</Viewer>
       </Paper>
+      {isFetching && (
+        <Snackbar
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          open={open}
+          onClose={handleClose}
+          message={<span>LOADING LOCATIONS...</span>}
+        />
+      )}
     </div>
   );
 }
@@ -60,4 +90,22 @@ Map.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(Map);
+//get the pokemon state and map it to props
+const mapStateToProps = state => {
+  return {
+    locations: state.locations.locations
+  };
+};
+
+//dispatch actions
+const mapDispatchToProps = {
+  fetchLocations: locationOperations.fetchLocations
+};
+
+export default compose(
+  withStyles(styles),
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
+)(Map);
