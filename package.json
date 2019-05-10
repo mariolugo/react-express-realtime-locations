@@ -8,6 +8,7 @@
     "@material-ui/icons": "^3.0.2",
     "cesium": "^1.57.0",
     "classnames": "^2.2.6",
+    "concurrently": "^4.1.0",
     "craco-cesium": "^1.0.0",
     "history": "^4.9.0",
     "lodash": "^4.17.11",
@@ -22,7 +23,8 @@
     "redux-form": "^8.2.0",
     "redux-observable": "^1.1.0",
     "resium": "^1.4.1",
-    "rxjs": "^6.5.1"
+    "rxjs": "^6.5.1",
+    "socket.io-client": "^2.2.0"
   },
   "scripts": {
     "start": "craco start",

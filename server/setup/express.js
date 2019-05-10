@@ -7,7 +7,7 @@ const compression = require('compression');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const http = require('http');
-
+const sockets = require('../src/sockets');
 /**
  * Setup middlewares for express
  * @param  {express} app the express app
@@ -74,6 +74,9 @@ let setupServer = (app) => {
     server.on('listening', () => {
         onListening(server);
     });
+
+    sockets(server);
+
 };
 
 /**

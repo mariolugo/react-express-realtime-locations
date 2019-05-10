@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 
 // Externals
 import PropTypes from "prop-types";
+import {sendPing} from '../../../sockets';
 
 // Material helpers
 import { withStyles } from "@material-ui/core/styles";
@@ -13,6 +14,7 @@ import compose from "recompose/compose";
 import Paper from "@material-ui/core/Paper";
 import Snackbar from "@material-ui/core/Snackbar";
 import Typography from "@material-ui/core/Typography";
+import Button from "@material-ui/core/Button";
 // Cesium
 import { Viewer, Entity, EntityDescription } from "resium";
 import { Cartesian3 } from "cesium";
@@ -41,7 +43,12 @@ function Map(props) {
         100
       );
       entities.push(
-        <Entity position={position} selected={location.status} point={pointGraphics} key={index}>
+        <Entity
+          position={position}
+          selected={location.status}
+          point={pointGraphics}
+          key={index}
+        >
           <EntityDescription>
             <Typography variant="h3">{location.name}</Typography>
             <Typography variant="h4">{location.description}</Typography>
@@ -54,8 +61,16 @@ function Map(props) {
   function handleClose() {
     setOpen(false);
   }
+
+  function doPing() {
+    sendPing();
+  }
+
   return (
     <div className={classes.root}>
+      <Button onClick={doPing} variant="contained" color="primary">
+        PING
+      </Button>
       <Paper className={classes.paper}>
         <Viewer>{entities}</Viewer>
       </Paper>

@@ -6,6 +6,7 @@ import { mapRoutes } from "./utils";
 import { createBrowserHistory } from "history";
 import { Router } from "react-router-dom";
 
+import {socketsConnection} from './sockets';
 import routes from "./routes";
 import * as serviceWorker from "./serviceWorker";
 import { MuiThemeProvider } from "@material-ui/core/styles";
@@ -18,6 +19,8 @@ import "./styles.css";
 
 const reduxStore = configureStore(window.REDUX_INITIAL_DATA);
 const history = createBrowserHistory();
+
+export const socket = socketsConnection(reduxStore.dispatch);
 
 ReactDOM.render(
   <ReduxProvider store={reduxStore}>
