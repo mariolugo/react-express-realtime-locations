@@ -10,7 +10,7 @@ let LocationsController = {};
 LocationsController.list = async () => {
   return new BPromise(async (resolve, reject) => {
     await Locations.findAll({
-      order: [["createdAt", "DESC"]]
+      order: [["id", "ASC"]]
     })
       .then(locations => resolve(locations))
       .catch(error => {
@@ -28,7 +28,19 @@ LocationsController.create = async location => {
     await Locations.create({
       ...location
     })
-      .then(location => resolve(location))
+      .then(location => {
+        if (!location) {
+          reject({
+            status: status.INTERNAL_SERVER_ERROR,
+            message: `Location could not be created`
+          });
+
+          return Locations.findAll({
+            order: [["id","ASC"]]
+          });
+        }
+      })
+      .then((locations)=> resolve(locations))
       .catch(error => {
         reject(error);
       });
@@ -61,7 +73,12 @@ LocationsController.update = async (id, locationBody) => {
           ...locationBody
         });
       })
-      .then(updatedLocation => resolve(updatedLocation))
+      .then( () => {
+        return Locations.findAll({
+          order: [["id", "ASC"]]
+        });
+      })
+      .then((locations)=> resolve(locations))
       .catch(error => reject(error));
   });
 };

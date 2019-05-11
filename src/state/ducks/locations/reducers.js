@@ -34,7 +34,7 @@ const reducers = createReducer(initState)({
   },
   [types.CREATE_LOCATION_COMPLETED]: (state, action) => {
     return {
-      items: action.items,
+      locations: action.items,
       isFetching: false
     };
   },
@@ -52,7 +52,7 @@ const reducers = createReducer(initState)({
   },
   [types.UPDATE_LOCATION_COMPLETED]: (state, action) => {
     return {
-      items: action.items,
+      locations: action.locations,
       isFetching: false
     };
   },

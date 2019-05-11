@@ -2,22 +2,23 @@ import React, { useState, useEffect } from "react";
 
 // Externals
 import PropTypes from "prop-types";
-import {sendPing} from '../../../sockets';
-
-// Material helpers
-import { withStyles } from "@material-ui/core/styles";
+import { sendPing } from "../../../sockets";
 import { connect } from "react-redux";
 import { locationOperations } from "../../../state/ducks/locations";
 import compose from "recompose/compose";
+
+// Material helpers
+import { withStyles } from "@material-ui/core/styles";
 
 // Material components
 import Paper from "@material-ui/core/Paper";
 import Snackbar from "@material-ui/core/Snackbar";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
+
 // Cesium
 import { Viewer, Entity, EntityDescription } from "resium";
-import { Cartesian3 } from "cesium";
+import { Cartesian3, CustomDataSource } from "cesium";
 
 const pointGraphics = { pixelSize: 10 };
 
@@ -26,36 +27,49 @@ function Map(props) {
   const { locations, isFetching } = props.locations;
   console.log("props", props);
 
+  const [loaded, setLoaded] = useState(false);
   const [open, setOpen] = useState(true);
+  const [locationsArray, setLocationsArray] = useState([]);
+
+  if (!loaded) {
+    fetchLocations();
+    setLoaded(true);
+  }
 
   useEffect(() => {
-    fetchLocations();
-  }, []);
+    if (Array.isArray(locations) && locations.length > 0) {
+      setLocationsArray(locations);
+    }
+  }, [locations]);
 
-  let entities = [];
-
-  if (typeof locations !== "undefined" && locations.length > 0) {
-    locations.forEach((location, index) => {
-      // set longitude, location and constant height from location
-      const position = Cartesian3.fromDegrees(
-        location.longitude,
-        location.latitude,
-        100
-      );
-      entities.push(
-        <Entity
-          position={position}
-          selected={location.status}
-          point={pointGraphics}
-          key={index}
-        >
-          <EntityDescription>
-            <Typography variant="h3">{location.name}</Typography>
-            <Typography variant="h4">{location.description}</Typography>
-          </EntityDescription>
-        </Entity>
-      );
-    });
+  console.log("locationArrays", locationsArray);
+  function renderEntities() {
+    let entities = [];
+    if (typeof locationsArray !== "undefined" && locationsArray.length > 0) {
+      locationsArray.forEach((location, index) => {
+        // set longitude, location and constant height from location
+        const position = Cartesian3.fromDegrees(
+          location.longitude,
+          location.latitude,
+          100
+        );
+        entities.push(
+          <Entity
+              position={position}
+              selected={location.status}
+              point={pointGraphics}
+              name={`entity ${location.id}`}
+              key={index}
+            >
+              <EntityDescription>
+                <Typography variant="h3">{location.name}</Typography>
+                <Typography variant="h4">{location.description}</Typography>
+              </EntityDescription>
+            </Entity>
+        );
+      });
+    }
+    return entities;
   }
 
   function handleClose() {
@@ -72,7 +86,12 @@ function Map(props) {
         PING
       </Button>
       <Paper className={classes.paper}>
-        <Viewer>{entities}</Viewer>
+        <Viewer>
+          {}
+          {typeof locationsArray !== "undefined" &&
+            locationsArray.length > 0 &&
+            renderEntities()}
+        </Viewer>
       </Paper>
       {isFetching && (
         <Snackbar

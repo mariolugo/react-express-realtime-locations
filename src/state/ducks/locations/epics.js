@@ -31,17 +31,42 @@ export const locationsListEpic = action$ =>
     )
   );
 
-// export const itemDetailEpic = action$ =>
-//   action$.pipe(
-//     ofType(types.FETCH_ITEM_START),
-//     mergeMap(action => {
-//       return ajax
-//         .getJSON(`https://pokeapi.co/api/v2/item/${action.name}/`)
-//         .pipe(
-//           map(response => {
-//             return actions.fetchItemSuccess(response);
-//           })
-//         );
-//     }),
-//     catchError(error => of(actions.fetchItemFailed(error)))
-//   );
+export const locationEditEpic = action$ =>
+  action$.pipe(
+    ofType(types.UPDATE_LOCATION_START),
+    mergeMap(action => {
+      const { location } = action;
+      return ajax.put(`${url}/locations/${location.id}`, location).pipe(
+        map(response => {
+          return actions.updateLocationsSuccess(response.response);
+        })
+      );
+    }),
+    catchError(error =>
+      of({
+        type: types.UPDATE_LOCATION_FAILED,
+        payload: "error",
+        error
+      })
+    )
+  );
+
+export const locationCreateEpic = action$ =>
+  action$.pipe(
+    ofType(types.CREATE_LOCATION_START),
+    mergeMap(action => {
+      const { location } = action;
+      return ajax.post(`${url}/locations`, location).pipe(
+        map(response => {
+          return actions.createLocationsSuccess(response.response);
+        })
+      );
+    }),
+    catchError(error =>
+      of({
+        type: types.CREATE_LOCATION_FAILED,
+        payload: "error",
+        error
+      })
+    )
+  );

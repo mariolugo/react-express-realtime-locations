@@ -24,9 +24,10 @@ export function fetchLocationsFailed(error) {
 }
 
 //start creating locations
-export function createLocations() {
+export function createLocations(location) {
   return {
     type: types.CREATE_LOCATION_START,
+    location
   };
 }
 
@@ -47,9 +48,10 @@ export function createLocationsFailed(error) {
 }
 
 //start updating locations
-export function updateLocations() {
+export function updateLocations(location) {
   return {
     type: types.UPDATE_LOCATION_START,
+    location
   };
 }
 

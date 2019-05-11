@@ -28,13 +28,13 @@ export default {
   },
   h5: {
     fontWeight: '500',
-    fontSize: '16px',
+    fontSize: '18px',
     letterSpacing: '-0.05px',
     lineHeight: '20px'
   },
   h6: {
     fontWeight: '500',
-    fontSize: '14px',
+    fontSize: '18px',
     letterSpacing: '-0.05px',
     lineHeight: '20px'
   },
