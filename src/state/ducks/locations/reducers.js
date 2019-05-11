@@ -70,7 +70,7 @@ const reducers = createReducer(initState)({
   },
   [types.DELETE_LOCATION_COMPLETED]: (state, action) => {
     return {
-      items: action.items,
+      locations: action.locations,
       isFetching: false
     };
   },

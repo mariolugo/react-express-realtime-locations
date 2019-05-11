@@ -10,6 +10,9 @@ let sockets = (server) => {
         logger.info('Sockets connected');
 
         socketsLocations.ping(socket,io);
+        socketsLocations.newLocations(socket,io);
+        socketsLocations.updatedLocation(socket,io);
+        socketsLocations.deletedLocation(socket,io);
     });
 
     

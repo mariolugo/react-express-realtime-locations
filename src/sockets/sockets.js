@@ -1,5 +1,5 @@
 import io from "socket.io-client";
-
+import {locationOperations} from '../state/ducks/locations';
 const socket = io("http://localhost:4000");
 
 const configureSocket = dispatch => {
@@ -16,6 +16,21 @@ const configureSocket = dispatch => {
     console.log(state);
   });
 
+  socket.on("locations/emit/NEW_LOCATIONS",async(state) => {
+    const {fetchLocations} = locationOperations;
+    await dispatch(fetchLocations());
+  });
+
+  socket.on("locations/emit/UPDATED_LOCATION", async(state) => {
+    const {fetchLocations} = locationOperations;
+    await dispatch(fetchLocations());
+  });
+
+  socket.on("locations/emit/DELETED_LOCATION", async(state) => {
+    const {fetchLocations} = locationOperations;
+    await dispatch(fetchLocations());
+  });
+
   return socket;
 };
 
@@ -24,5 +39,17 @@ const configureSocket = dispatch => {
 export const sendPing = () => {
   socket.emit("PING", "PING");
 };
+
+export const newLocations = () => {
+  socket.emit("locations/NEW_LOCATIONS");
+}
+
+export const editedLocation = () => {
+  socket.emit("locations/UPDATED_LOCATION");
+}
+
+export const deletedLocation = () => {
+  socket.emit("locations/DELETED_LOCATION");
+}
 
 export default configureSocket;

@@ -72,9 +72,10 @@ export function updateLocationsFailed(error) {
 }
 
 //start deleting locations
-export function deleteLocations() {
+export function deleteLocations(id) {
   return {
     type: types.DELETE_LOCATION_START,
+    id
   };
 }
 

@@ -70,3 +70,23 @@ export const locationCreateEpic = action$ =>
       })
     )
   );
+
+export const locationDeleteEpic = action$ =>
+action$.pipe(
+  ofType(types.DELETE_LOCATION_START),
+  mergeMap(action => {
+    const { id } = action;
+    return ajax.delete(`${url}/locations/${id}`).pipe(
+      map(response => {
+        return actions.deleteLocationsSuccess(response.response);
+      })
+    );
+  }),
+  catchError(error =>
+    of({
+      type: types.DELETE_LOCATION_FAILED,
+      payload: "error",
+      error
+    })
+  )
+);

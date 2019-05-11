@@ -87,7 +87,6 @@ function Map(props) {
       </Button>
       <Paper className={classes.paper}>
         <Viewer>
-          {}
           {typeof locationsArray !== "undefined" &&
             locationsArray.length > 0 &&
             renderEntities()}

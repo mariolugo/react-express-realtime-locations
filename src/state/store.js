@@ -9,13 +9,15 @@ import { combineEpics } from "redux-observable";
 import {
   locationsListEpic,
   locationEditEpic,
-  locationCreateEpic
+  locationCreateEpic,
+  locationDeleteEpic
 } from "./ducks/locations/epics";
 
 const rootEpic = combineEpics(
   locationsListEpic,
   locationEditEpic,
-  locationCreateEpic
+  locationCreateEpic,
+  locationDeleteEpic
 );
 
 const epicMiddleware = createEpicMiddleware();

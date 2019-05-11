@@ -59,6 +59,23 @@ const router = app => {
         return res.status(err.status).send(err);
       });
   });
+  /**
+   * Delete location
+   * @param req request
+   * @param res response
+   */
+  app.delete("/v1/locations/:id", async (req, res) => {
+    const { id } = req.params;
+    await locationController
+      .delete(id)
+      .then(locationDeleted => {
+        return res.status(status.OK).send(locationDeleted);
+      })
+      .catch(err => {
+        logger.error(err);
+        return res.status(err.status).send(err);
+      });
+  });
 };
 
 module.exports = router;

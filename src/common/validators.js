@@ -11,13 +11,13 @@ export const validate = values => {
 
   if (!values.latitude) {
     errors.latitude = "Latitude is required";
-  }  else if (!/^-?([1-8]?[1-9]|[1-9]0)\.{1}\d{1,20}$/i.test(values.latitude)) {
+  }  else if (!/^-?([0-8]?[0-9]|[0-9]0)\.{1}\d{1,20}$/i.test(values.latitude)) {
     errors.latitude = "Latitude must be a valid"
   }
 
   if (!values.longitude) {
     errors.longitude = "Longitude is required";
-  } else if (!/^-?([1]?[1-7][1-9]|[1]?[1-8][0]|[1-9]?[0-9])\.{1}\d{1,20}$/i.test(values.longitude)) {
+  } else if (!/^-?([1]?[0-7][0-9]|[1]?[0-8][0]|[0-9]?[0-9])\.{1}\d{1,20}$/i.test(values.longitude)) {
     errors.longitude = "Longitude must be a valid"
   }
 

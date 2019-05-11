@@ -36,11 +36,11 @@ LocationsController.create = async location => {
           });
 
           return Locations.findAll({
-            order: [["id","ASC"]]
+            order: [["id", "ASC"]]
           });
         }
       })
-      .then((locations)=> resolve(locations))
+      .then(locations => resolve(locations))
       .catch(error => {
         reject(error);
       });
@@ -73,12 +73,45 @@ LocationsController.update = async (id, locationBody) => {
           ...locationBody
         });
       })
-      .then( () => {
+      .then(() => {
         return Locations.findAll({
           order: [["id", "ASC"]]
         });
       })
-      .then((locations)=> resolve(locations))
+      .then(locations => resolve(locations))
+      .catch(error => reject(error));
+  });
+};
+
+/**
+ * Delete location
+ * @param id id for the location to delete
+ */
+LocationsController.delete = async id => {
+  return new BPromise(async (resolve, reject) => {
+    logger.debug("id", id);
+    if (isNaN(id)) {
+      reject({
+        status: status.NOT_ACCEPTABLE,
+        message: "Id must be a number"
+      });
+    }
+    await Locations.findByPk(id)
+      .then(location => {
+        if (!location) {
+          reject({
+            status: status.NOT_FOUND,
+            message: `Location with id ${id} not found`
+          });
+        }
+        return location.destroy();
+      })
+      .then(() => {
+        return Locations.findAll({
+          order: [["id", "ASC"]]
+        });
+      })
+      .then(locations => resolve(locations))
       .catch(error => reject(error));
   });
 };

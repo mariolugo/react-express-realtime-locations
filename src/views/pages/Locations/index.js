@@ -8,7 +8,7 @@ import { locationOperations } from "../../../state/ducks/locations";
 import compose from "recompose/compose";
 import { validate } from "../../../common/validators";
 import Moment from "react-moment";
-import moment from 'moment';
+import { newLocations, editedLocation, deletedLocation } from "../../../sockets";
 
 // Material helpers
 import { withStyles } from "@material-ui/core/styles";
@@ -31,16 +31,10 @@ import IconButton from "@material-ui/core/IconButton";
 import EditIcon from "@material-ui/icons/Edit";
 import Switch from "@material-ui/core/Switch";
 import TextField from "@material-ui/core/TextField";
-import FormLabel from "@material-ui/core/FormLabel";
-import FormControl from "@material-ui/core/FormControl";
-import FormGroup from "@material-ui/core/FormGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import FormHelperText from "@material-ui/core/FormHelperText";
 
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
 function Locations(props) {
@@ -50,10 +44,6 @@ function Locations(props) {
     createLocation,
     updateLocation,
     deleteLocation,
-    handleSubmit,
-    pristine,
-    reset,
-    submitting,
     invalid,
     form
   } = props;
@@ -90,13 +80,14 @@ function Locations(props) {
     }
   }, [locations]);
 
-  function updateStatus(location) {
+  async function updateStatus(location) {
     let data = {
       ...location
     };
     data.status = !data.status;
-    updateLocation(data);
-    setOpen(true);
+    await updateLocation(data);
+    await setOpen(true);
+    await editedLocation();
   }
 
   function handleClose() {
@@ -115,7 +106,14 @@ function Locations(props) {
     console.log("values", locationForm.values);
     const location = locationForm.values;
     await handleModalClose();
-    createLocation(location);
+    await createLocation(location);
+    await newLocations();
+  }
+
+  async function handleDeleteLocation(id){
+    let location = id;
+    await deleteLocation(location);
+    await deletedLocation();
   }
 
   return (
@@ -202,6 +200,7 @@ function Locations(props) {
                               <IconButton
                                 aria-label="Delete"
                                 className={classes.margin}
+                                onClick={()=>handleDeleteLocation(location.id)}
                               >
                                 <DeleteIcon fontSize="small" />
                               </IconButton>
