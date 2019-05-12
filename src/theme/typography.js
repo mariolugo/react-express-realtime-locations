@@ -1,5 +1,6 @@
 import palette from './palette';
 
+//change all the default typography
 export default {
   useNextVariants: true,
   h1: {

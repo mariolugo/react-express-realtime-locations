@@ -1,5 +1,6 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
+  // Location model generated from sequelize-cli
   const Location = sequelize.define('Location', {
     name: DataTypes.STRING,
     description: DataTypes.STRING,
@@ -7,8 +8,5 @@ module.exports = (sequelize, DataTypes) => {
     longitude: DataTypes.FLOAT,
     status: DataTypes.BOOLEAN
   }, {});
-  Location.associate = function(models) {
-    // associations can be defined here
-  };
   return Location;
 };

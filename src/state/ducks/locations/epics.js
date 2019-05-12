@@ -10,6 +10,9 @@ import { ajax } from "rxjs/ajax";
 
 const url = `http://localhost:4000/v1`;
 
+/**
+ * Location fetching epic
+ */
 export const locationsListEpic = action$ =>
   action$.pipe(
     ofType(types.FETCH_LOCATIONS_START),
@@ -31,6 +34,9 @@ export const locationsListEpic = action$ =>
     )
   );
 
+/**
+ * Location update epic
+ */
 export const locationEditEpic = action$ =>
   action$.pipe(
     ofType(types.UPDATE_LOCATION_START),
@@ -51,6 +57,9 @@ export const locationEditEpic = action$ =>
     )
   );
 
+/**
+ * Location creating epic
+ */
 export const locationCreateEpic = action$ =>
   action$.pipe(
     ofType(types.CREATE_LOCATION_START),
@@ -71,22 +80,25 @@ export const locationCreateEpic = action$ =>
     )
   );
 
+/**
+ * Location delete epic
+ */
 export const locationDeleteEpic = action$ =>
-action$.pipe(
-  ofType(types.DELETE_LOCATION_START),
-  mergeMap(action => {
-    const { id } = action;
-    return ajax.delete(`${url}/locations/${id}`).pipe(
-      map(response => {
-        return actions.deleteLocationsSuccess(response.response);
+  action$.pipe(
+    ofType(types.DELETE_LOCATION_START),
+    mergeMap(action => {
+      const { id } = action;
+      return ajax.delete(`${url}/locations/${id}`).pipe(
+        map(response => {
+          return actions.deleteLocationsSuccess(response.response);
+        })
+      );
+    }),
+    catchError(error =>
+      of({
+        type: types.DELETE_LOCATION_FAILED,
+        payload: "error",
+        error
       })
-    );
-  }),
-  catchError(error =>
-    of({
-      type: types.DELETE_LOCATION_FAILED,
-      payload: "error",
-      error
-    })
-  )
-);
+    )
+  );

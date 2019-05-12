@@ -25,7 +25,7 @@ const router = app => {
       });
   });
   /**
-   * Create location
+   * Create location route
    * @param req request
    * @param res response
    */
@@ -42,7 +42,7 @@ const router = app => {
       });
   });
   /**
-   * Update location
+   * Update location route
    * @param req request
    * @param res response
    */
@@ -60,7 +60,7 @@ const router = app => {
       });
   });
   /**
-   * Delete location
+   * Delete location route
    * @param req request
    * @param res response
    */

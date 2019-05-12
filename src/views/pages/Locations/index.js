@@ -44,7 +44,9 @@ function Locations(props) {
 
   const { locationForm } = form;
 
-  //moment configuration
+  /**
+   * Moment configuration for createdAt table value
+   */
   const calendarStrings = {
     lastDay: "[Yesterday at] LT",
     sameDay: "[Today at] LT",
@@ -63,14 +65,9 @@ function Locations(props) {
     open: false
   });
 
-  const [values, setValues] = useState({
-    name: "My location name",
-    description: "My location description",
-    longitude: -101.421675123715,
-    latitude: 22.3157619728408,
-    status: false
-  });
-
+  /**
+   * Form initial values
+   */
   let initialValues = {
     name: "My location name",
     description: "My location description",
@@ -79,6 +76,13 @@ function Locations(props) {
     status: false
   };
 
+  const [values, setValues] = useState({
+    ...initialValues
+  });
+
+  /**
+   * Use effect as componentDidMount and componentWillReceiveProps
+   */
   useEffect(() => {
     function getLocations() {
       fetchLocations();
@@ -97,6 +101,10 @@ function Locations(props) {
     }
   }, [locations, fetchLocations, initialValues]);
 
+  /**
+   * Update location status, dispatch andction and emit socket
+   * @param location location to update
+   */
   async function updateStatus(location) {
     let data = {
       ...location
@@ -106,16 +114,25 @@ function Locations(props) {
     await editedLocation();
   }
 
+  /**
+   * Handle snackbar close
+   */
   function handleClose() {
     setOpen(false);
   }
 
+  /**
+   * Handle modal closse
+   */
   async function handleModalClose() {
     setOpenModal({
       open: false
     });
   }
 
+  /**
+   * Handle location creation, close modal, dispatch action and emit socket
+   */
   async function handleCreateLocation() {
     const location = locationForm.values;
     await handleModalClose();
@@ -123,12 +140,21 @@ function Locations(props) {
     await newLocations();
   }
 
+  /**
+   * Handle location delete,dispatch action and emit socket
+   * @param id id of the location to delete
+   */
   async function handleDeleteLocation(id) {
     let location = id;
     await deleteLocation(location);
     await deletedLocation();
   }
 
+  /**
+   * Open dialog with initial form values for the form
+   * @param type type of the dialog
+   * @param location location object
+   */
   async function openDialog(type, location) {
     if (typeof location !== "undefined") {
       setValues({
@@ -146,6 +172,9 @@ function Locations(props) {
     });
   }
 
+  /**
+   * Handle location update,close modal, dispatch action and emit socket
+   */
   async function handleEditLocation() {
     const location = locationForm.values;
     await handleModalClose();

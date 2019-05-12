@@ -1,5 +1,5 @@
 import io from "socket.io-client";
-import {locationOperations} from '../state/ducks/locations';
+import { locationOperations } from "../state/ducks/locations";
 const socket = io("http://localhost:4000");
 
 const configureSocket = dispatch => {
@@ -16,18 +16,27 @@ const configureSocket = dispatch => {
     console.log(state);
   });
 
-  socket.on("locations/emit/NEW_LOCATIONS",async(state) => {
-    const {fetchLocations} = locationOperations;
+  /**
+   * New locations listeners, dispatch fetchLocations
+   */
+  socket.on("locations/emit/NEW_LOCATIONS", async state => {
+    const { fetchLocations } = locationOperations;
     await dispatch(fetchLocations());
   });
 
-  socket.on("locations/emit/UPDATED_LOCATION", async(state) => {
-    const {fetchLocations} = locationOperations;
+  /**
+   * Updated location listener, dispatch fetchLocations
+   */
+  socket.on("locations/emit/UPDATED_LOCATION", async state => {
+    const { fetchLocations } = locationOperations;
     await dispatch(fetchLocations());
   });
 
-  socket.on("locations/emit/DELETED_LOCATION", async(state) => {
-    const {fetchLocations} = locationOperations;
+  /**
+   * Deleted location listener, dispatch fetchLocations
+   */
+  socket.on("locations/emit/DELETED_LOCATION", async state => {
+    const { fetchLocations } = locationOperations;
     await dispatch(fetchLocations());
   });
 
@@ -40,16 +49,25 @@ export const sendPing = () => {
   socket.emit("PING", "PING");
 };
 
+/**
+ * Emit new locations
+ */
 export const newLocations = () => {
   socket.emit("locations/NEW_LOCATIONS");
-}
+};
 
+/**
+ * Emit updated location
+ */
 export const editedLocation = () => {
   socket.emit("locations/UPDATED_LOCATION");
-}
+};
 
+/**
+ * Emit deleted location
+ */
 export const deletedLocation = () => {
   socket.emit("locations/DELETED_LOCATION");
-}
+};
 
 export default configureSocket;

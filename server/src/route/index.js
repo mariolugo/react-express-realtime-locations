@@ -8,6 +8,7 @@ const locationsRoute = require('./locations-route');
  * @param  {express} app  the express obj
  */
 let routes = (app) => {
+    //Adding cors for the api
     app.options('*', cors());
 
     app.all('*', function (req, res, next) {

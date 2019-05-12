@@ -29,6 +29,9 @@ function Map(props) {
   const [open, setOpen] = useState(true);
   const [locationsArray, setLocationsArray] = useState([]);
 
+  /**
+   * Use effect as componentDidMount and componentWillReceiveProps
+   */
   useEffect(() => {
     function getLocations() {
       fetchLocations();
@@ -43,6 +46,9 @@ function Map(props) {
     }
   }, [locations, fetchLocations, loaded]);
 
+  /**
+   * Render entities for the cesium Viewer
+   */
   function renderEntities() {
     let entities = [];
     if (typeof locationsArray !== "undefined" && locationsArray.length > 0) {
@@ -72,6 +78,9 @@ function Map(props) {
     return entities;
   }
 
+  /**
+   * Handle close
+   */
   function handleClose() {
     setOpen(false);
   }

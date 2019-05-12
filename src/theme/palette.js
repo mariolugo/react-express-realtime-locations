@@ -1,5 +1,6 @@
 import { white, black } from '../common/colors';
 
+// change default palette
 export default {
   common: {
     black,

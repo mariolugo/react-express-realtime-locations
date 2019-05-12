@@ -1,3 +1,4 @@
+//Colors constants for global template
 export const white = '#FFFFFF';
 
 export const grey = {

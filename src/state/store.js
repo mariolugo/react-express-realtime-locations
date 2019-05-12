@@ -13,6 +13,7 @@ import {
   locationDeleteEpic
 } from "./ducks/locations/epics";
 
+//get all epics and combine them
 const rootEpic = combineEpics(
   locationsListEpic,
   locationEditEpic,
@@ -20,6 +21,7 @@ const rootEpic = combineEpics(
   locationDeleteEpic
 );
 
+// create epic middleware
 const epicMiddleware = createEpicMiddleware();
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -27,6 +29,8 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const formReducer = {
   form: reduxFormReducer
 };
+
+//configure application store
 export default function configureStore(initialState) {
   const rootReducer = combineReducers({
     ...reducers,
