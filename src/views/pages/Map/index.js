@@ -31,14 +31,18 @@ function Map(props) {
   const [open, setOpen] = useState(true);
   const [locationsArray, setLocationsArray] = useState([]);
 
-  if (!loaded) {
-    fetchLocations();
-    setLoaded(true);
-  }
 
   useEffect(() => {
+    function getLocations() {
+      fetchLocations();
+    }
     if (Array.isArray(locations) && locations.length > 0) {
       setLocationsArray(locations);
+    }
+
+    if (!loaded) {
+      getLocations();
+      setLoaded(true);
     }
   }, [locations]);
 
@@ -76,15 +80,8 @@ function Map(props) {
     setOpen(false);
   }
 
-  function doPing() {
-    sendPing();
-  }
-
   return (
     <div className={classes.root}>
-      <Button onClick={doPing} variant="contained" color="primary">
-        PING
-      </Button>
       <Paper className={classes.paper}>
         <Viewer>
           {typeof locationsArray !== "undefined" &&

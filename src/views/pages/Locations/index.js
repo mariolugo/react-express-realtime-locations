@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { Field, reduxForm } from "redux-form";
+import { reduxForm } from "redux-form";
 
 // Externals
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { locationOperations } from "../../../state/ducks/locations";
 import compose from "recompose/compose";
-import { validate } from "../../../common/validators";
+
 import Moment from "react-moment";
-import { newLocations, editedLocation, deletedLocation } from "../../../sockets";
+import {
+  newLocations,
+  editedLocation,
+  deletedLocation
+} from "../../../sockets";
 
 // Material helpers
 import { withStyles } from "@material-ui/core/styles";
+
+// Components
+import { DialogComponent, FormComponent } from "../../../components";
 
 // Material components
 import Snackbar from "@material-ui/core/Snackbar";
@@ -31,11 +38,6 @@ import IconButton from "@material-ui/core/IconButton";
 import EditIcon from "@material-ui/icons/Edit";
 import Switch from "@material-ui/core/Switch";
 import TextField from "@material-ui/core/TextField";
-
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "@material-ui/core/DialogTitle";
 
 function Locations(props) {
   const {
@@ -60,25 +62,48 @@ function Locations(props) {
     sameElse: "L"
   };
 
-
-  console.log("props", props);
-
-  const { locations, isFetching } = props.locations;
+  const { locations, isFetching, updated } = props.locations;
   const [loaded, setLoaded] = useState(false);
   const [locationsArray, setLocationsArray] = useState([]);
   const [open, setOpen] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
+  const [openModal, setOpenModal] = useState({
+    type: "",
+    open: false
+  });
 
-  if (!loaded) {
-    fetchLocations();
-    setLoaded(true);
-  }
+  const [values, setValues] = useState({
+    name: "My location name",
+    description: "My location description",
+    longitude: -101.421675123715,
+    latitude: 22.3157619728408,
+    status: false
+  });
+
+  let initialValues = {
+    name: "My location name",
+    description: "My location description",
+    longitude: -101.421675123715,
+    latitude: 22.3157619728408,
+    status: false
+  };
 
   useEffect(() => {
+    function getLocations() {
+      fetchLocations();
+    }
     if (Array.isArray(locations) && locations.length > 0) {
       setLocationsArray(locations);
     }
-  }, [locations]);
+
+    if (updated) {
+      setOpen(true);
+    }
+
+    if (!loaded) {
+      getLocations();
+      setLoaded(true);
+    }
+  }, [locations, fetchLocations, initialValues]);
 
   async function updateStatus(location) {
     let data = {
@@ -86,7 +111,6 @@ function Locations(props) {
     };
     data.status = !data.status;
     await updateLocation(data);
-    await setOpen(true);
     await editedLocation();
   }
 
@@ -94,36 +118,61 @@ function Locations(props) {
     setOpen(false);
   }
 
-  function openCreateModal() {
-    setOpenModal(true);
-  }
+  function openCreateModal() {}
 
   async function handleModalClose() {
-    setOpenModal(false);
+    setOpenModal({
+      open: false
+    });
   }
 
   async function handleCreateLocation() {
-    console.log("values", locationForm.values);
     const location = locationForm.values;
     await handleModalClose();
     await createLocation(location);
     await newLocations();
   }
 
-  async function handleDeleteLocation(id){
+  async function handleDeleteLocation(id) {
     let location = id;
     await deleteLocation(location);
     await deletedLocation();
   }
 
+  async function openDialog(type, location) {
+    if (typeof location !== "undefined") {
+      setValues({
+        ...location
+      });
+    } else {
+      setValues({
+        ...initialValues
+      });
+    }
+
+    setOpenModal({
+      open: true,
+      type: type
+    });
+  }
+
+  async function handleEditLocation() {
+    const location = locationForm.values;
+    await handleModalClose();
+    await updateLocation(location);
+    await newLocations();
+  }
+
+  console.log("render location");
+
   return (
     <div className={classes.root}>
-      {isFetching && <CircularProgress className={classes.progress} />}
-      {!isFetching && (
+      {!loaded && <CircularProgress className={classes.progress} />}
+      {loaded && (
         <Grid container spacing={24}>
           <Grid item xs={12}>
             <Button
-              onClick={openCreateModal}
+              onClick={() => openDialog("create")}
               variant="contained"
               color="primary"
             >
@@ -185,7 +234,7 @@ function Locations(props) {
                             />
                           </TableCell>
                           <TableCell className={classes.tableCell}>
-                            <Moment calendar={calendarStrings} >
+                            <Moment calendar={calendarStrings}>
                               {location.createdAt}
                             </Moment>
                           </TableCell>
@@ -194,13 +243,16 @@ function Locations(props) {
                               <IconButton
                                 aria-label="Delete"
                                 className={classes.margin}
+                                onClick={() => openDialog("update", location)}
                               >
                                 <EditIcon fontSize="small" />
                               </IconButton>
                               <IconButton
                                 aria-label="Delete"
                                 className={classes.margin}
-                                onClick={()=>handleDeleteLocation(location.id)}
+                                onClick={() =>
+                                  handleDeleteLocation(location.id)
+                                }
                               >
                                 <DeleteIcon fontSize="small" />
                               </IconButton>
@@ -218,106 +270,22 @@ function Locations(props) {
               onClose={handleClose}
               message={<span>Updated location</span>}
             />
-
-            <Dialog
-              open={openModal}
-              onClose={handleModalClose}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-              fullWidth={true}
-              maxWidth={"sm"}
+            <DialogComponent
+              openModal={openModal.open}
+              handleModalClose={handleModalClose}
+              invalid={invalid}
+              handleCreateLocation={handleCreateLocation}
+              type={openModal.type}
+              handleEditLocation={handleEditLocation}
             >
-              <DialogTitle id="alert-dialog-title">
-                {"Create location"}
-              </DialogTitle>
-              <DialogContent>
-                <form>
-                  <Field
-                    name="name"
-                    type="text"
-                    component={renderField}
-                    label="Location Name"
-                    classes={classes}
-                  />
-                  <Field
-                    name="description"
-                    type="text"
-                    component={renderField}
-                    label="Description"
-                    classes={classes}
-                  />
-                  <Field
-                    name="latitude"
-                    type="text"
-                    component={renderField}
-                    label="Latitude"
-                    classes={classes}
-                  />
-                  <Field
-                    name="longitude"
-                    type="text"
-                    component={renderField}
-                    label="Longitude"
-                    classes={classes}
-                  />
-                  <Typography variant="subtitle1">Is Open?</Typography>
-                  <Field
-                    name="status"
-                    component={renderSwitchField}
-                    label="Is Open?"
-                    classes={classes}
-                  />
-                </form>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleModalClose} color="primary">
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleCreateLocation}
-                  disabled={invalid}
-                  color="primary"
-                  autoFocus
-                >
-                  Create Location
-                </Button>
-              </DialogActions>
-            </Dialog>
+              <FormComponent classes={classes} initValues={values} />
+            </DialogComponent>
           </Grid>
         </Grid>
       )}
     </div>
   );
 }
-
-const renderField = ({
-  input,
-  label,
-  type,
-  meta: { touched, error },
-  classes
-}) => (
-  <TextField
-    error={touched && typeof error !== "undefined"}
-    id="outlined-error"
-    label={label}
-    className={classes.textField}
-    margin="normal"
-    {...input}
-    fullWidth
-    helperText={touched ? error : ""}
-    variant="outlined"
-  />
-);
-
-const renderSwitchField = ({ input, meta: { touched, error } }) => {
-  console.log("input", input);
-  return (
-    <div>
-      <Switch checked={input.value} {...input} onChange={input.onChange} />
-    </div>
-  );
-};
 
 // Component styles
 const styles = theme => ({
@@ -372,17 +340,6 @@ const mapDispatchToProps = {
 };
 
 export default compose(
-  reduxForm({
-    form: "locationForm", // a unique identifier for this form
-    validate, // <--- validation function given to redux-form
-    initialValues: {
-      name: "My location name",
-      description: "My location description",
-      latitude: 29.0968238,
-      longitude: 110.94602069999999,
-      status: false
-    }
-  }),
   withStyles(styles),
   connect(
     mapStateToProps,

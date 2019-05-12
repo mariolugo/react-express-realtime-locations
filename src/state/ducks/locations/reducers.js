@@ -53,7 +53,8 @@ const reducers = createReducer(initState)({
   [types.UPDATE_LOCATION_COMPLETED]: (state, action) => {
     return {
       locations: action.locations,
-      isFetching: false
+      isFetching: false,
+      updated: true
     };
   },
   [types.UPDATE_LOCATION_FAILED]: (state, action) => {
