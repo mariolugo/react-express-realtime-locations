@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 // Externals
 import PropTypes from "prop-types";
@@ -20,7 +20,6 @@ function DialogComponent(props) {
     type = "create",
     handleEditLocation
   } = props;
-  console.log("type", type);
   return (
     <Dialog
       open={openModal}
@@ -39,7 +38,9 @@ function DialogComponent(props) {
           Cancel
         </Button>
         <Button
-          onClick={type === "create" ? handleCreateLocation : handleEditLocation}
+          onClick={
+            type === "create" ? handleCreateLocation : handleEditLocation
+          }
           disabled={invalid}
           color="primary"
           autoFocus
@@ -50,5 +51,15 @@ function DialogComponent(props) {
     </Dialog>
   );
 }
+
+DialogComponent.propTypes = {
+  children: PropTypes.node,
+  openModal: PropTypes.bool,
+  handleModalClose: PropTypes.func,
+  invalid: PropTypes.bool,
+  handleCreateLocation: PropTypes.func,
+  type: PropTypes.oneOf(["create", "update"]),
+  handleEditLocation: PropTypes.func
+};
 
 export default DialogComponent;

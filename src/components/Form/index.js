@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Field, reduxForm } from "redux-form";
 
 // Externals
@@ -32,7 +32,6 @@ const renderField = ({
 );
 
 const renderSwitchField = ({ input, meta: { touched, error } }) => {
-  console.log("input", input);
   return (
     <div>
       <Switch checked={input.value} {...input} onChange={input.onChange} />
@@ -42,7 +41,6 @@ const renderSwitchField = ({ input, meta: { touched, error } }) => {
 
 function FormComponent(props) {
   const { classes } = props;
-  console.log("props", props);
   return (
     <form>
       <Field
@@ -85,7 +83,6 @@ function FormComponent(props) {
 }
 
 function mapStateToProps(state, ownProps) {
-  console.log("ownProps", ownProps);
   const {initValues} = ownProps;
   return {
     initialValues: {
@@ -93,6 +90,14 @@ function mapStateToProps(state, ownProps) {
     }
   };
 }
+
+FormComponent.propTypes = {
+  input: PropTypes.element,
+  label: PropTypes.string,
+  type: PropTypes.oneOf(["create", "update"]),
+  meta:PropTypes.object,
+  classes: PropTypes.object,
+};
 
 export default connect(mapStateToProps)(
   reduxForm({

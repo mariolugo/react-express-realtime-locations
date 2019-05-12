@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { reduxForm } from "redux-form";
-
 // Externals
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { locationOperations } from "../../../state/ducks/locations";
 import compose from "recompose/compose";
 
-import Moment from "react-moment";
 import {
   newLocations,
   editedLocation,
@@ -18,7 +15,11 @@ import {
 import { withStyles } from "@material-ui/core/styles";
 
 // Components
-import { DialogComponent, FormComponent } from "../../../components";
+import {
+  DialogComponent,
+  FormComponent,
+  TableComponent
+} from "../../../components";
 
 // Material components
 import Snackbar from "@material-ui/core/Snackbar";
@@ -26,18 +27,9 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Grid from "@material-ui/core/Grid";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
+
 import Toolbar from "@material-ui/core/Toolbar";
 import Paper from "@material-ui/core/Paper";
-import DeleteIcon from "@material-ui/icons/Delete";
-import IconButton from "@material-ui/core/IconButton";
-import EditIcon from "@material-ui/icons/Edit";
-import Switch from "@material-ui/core/Switch";
-import TextField from "@material-ui/core/TextField";
 
 function Locations(props) {
   const {
@@ -67,7 +59,7 @@ function Locations(props) {
   const [locationsArray, setLocationsArray] = useState([]);
   const [open, setOpen] = useState(false);
   const [openModal, setOpenModal] = useState({
-    type: "",
+    type: "create",
     open: false
   });
 
@@ -91,7 +83,7 @@ function Locations(props) {
     function getLocations() {
       fetchLocations();
     }
-    if (Array.isArray(locations) && locations.length > 0) {
+    if (!isFetching && Array.isArray(locations) && locations.length > 0) {
       setLocationsArray(locations);
     }
 
@@ -99,7 +91,7 @@ function Locations(props) {
       setOpen(true);
     }
 
-    if (!loaded) {
+    if (!loaded && !isFetching) {
       getLocations();
       setLoaded(true);
     }
@@ -117,8 +109,6 @@ function Locations(props) {
   function handleClose() {
     setOpen(false);
   }
-
-  function openCreateModal() {}
 
   async function handleModalClose() {
     setOpenModal({
@@ -163,8 +153,6 @@ function Locations(props) {
     await newLocations();
   }
 
-  console.log("render location");
-
   return (
     <div className={classes.root}>
       {!loaded && <CircularProgress className={classes.progress} />}
@@ -189,79 +177,14 @@ function Locations(props) {
                 </div>
               </Toolbar>
               <div className={classes.tableWrapper}>
-                <Table className={classes.table} aria-labelledby="tableTitle">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell className={classes.tableCell}>ID</TableCell>
-                      <TableCell className={classes.tableCell}>Name</TableCell>
-                      <TableCell className={classes.tableCell}>
-                        Description
-                      </TableCell>
-                      <TableCell className={classes.tableCell}>
-                        Coordinates
-                      </TableCell>
-                      <TableCell className={classes.tableCell}>Open</TableCell>
-                      <TableCell className={classes.tableCell}>
-                        Created At
-                      </TableCell>
-                      <TableCell className={classes.tableCell}>
-                        Actions
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {typeof locationsArray !== "undefined" &&
-                      Array.isArray(locationsArray) &&
-                      locationsArray.map((location, i) => (
-                        <TableRow key={i}>
-                          <TableCell className={classes.tableCell}>
-                            {location.id}
-                          </TableCell>
-                          <TableCell className={classes.tableCell}>
-                            {location.name}
-                          </TableCell>
-                          <TableCell className={classes.tableCell}>
-                            {location.description}
-                          </TableCell>
-                          <TableCell className={classes.tableCell}>
-                            ({location.latitude}, {location.longitude})
-                          </TableCell>
-                          <TableCell className={classes.tableCell}>
-                            <Switch
-                              checked={location.status}
-                              onChange={() => updateStatus(location)}
-                              value="location.status"
-                            />
-                          </TableCell>
-                          <TableCell className={classes.tableCell}>
-                            <Moment calendar={calendarStrings}>
-                              {location.createdAt}
-                            </Moment>
-                          </TableCell>
-                          <TableCell className={classes.tableCell}>
-                            <div>
-                              <IconButton
-                                aria-label="Delete"
-                                className={classes.margin}
-                                onClick={() => openDialog("update", location)}
-                              >
-                                <EditIcon fontSize="small" />
-                              </IconButton>
-                              <IconButton
-                                aria-label="Delete"
-                                className={classes.margin}
-                                onClick={() =>
-                                  handleDeleteLocation(location.id)
-                                }
-                              >
-                                <DeleteIcon fontSize="small" />
-                              </IconButton>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Table>
+                <TableComponent
+                  updateStatus={updateStatus}
+                  classes={classes}
+                  openDialog={openDialog}
+                  handleDeleteLocation={handleDeleteLocation}
+                  locationsArray={locationsArray}
+                  calendarStrings={calendarStrings}
+                />
               </div>
             </Paper>
             <Snackbar
@@ -337,6 +260,16 @@ const mapDispatchToProps = {
   createLocation: locationOperations.createLocations,
   updateLocation: locationOperations.updateLocations,
   deleteLocation: locationOperations.deleteLocations
+};
+
+Locations.propTypes = {
+  classes: PropTypes.object,
+  fetchLocations: PropTypes.func.isRequired,
+  createLocation: PropTypes.func.isRequired,
+  updateLocation: PropTypes.func.isRequired,
+  deleteLocation: PropTypes.func.isRequired,
+  invalid: PropTypes.bool,
+  form: PropTypes.object
 };
 
 export default compose(

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 // Externals
 import PropTypes from "prop-types";
-import { sendPing } from "../../../sockets";
+import { MapComponent } from "../../../components";
 import { connect } from "react-redux";
 import { locationOperations } from "../../../state/ducks/locations";
 import compose from "recompose/compose";
@@ -14,23 +14,20 @@ import { withStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Snackbar from "@material-ui/core/Snackbar";
 import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
 
 // Cesium
-import { Viewer, Entity, EntityDescription } from "resium";
-import { Cartesian3, CustomDataSource } from "cesium";
+import { Entity, EntityDescription } from "resium";
+import { Cartesian3 } from "cesium";
 
 const pointGraphics = { pixelSize: 10 };
 
 function Map(props) {
   const { classes, fetchLocations } = props;
   const { locations, isFetching } = props.locations;
-  console.log("props", props);
 
   const [loaded, setLoaded] = useState(false);
   const [open, setOpen] = useState(true);
   const [locationsArray, setLocationsArray] = useState([]);
-
 
   useEffect(() => {
     function getLocations() {
@@ -44,9 +41,8 @@ function Map(props) {
       getLocations();
       setLoaded(true);
     }
-  }, [locations]);
+  }, [locations, fetchLocations, loaded]);
 
-  console.log("locationArrays", locationsArray);
   function renderEntities() {
     let entities = [];
     if (typeof locationsArray !== "undefined" && locationsArray.length > 0) {
@@ -59,17 +55,17 @@ function Map(props) {
         );
         entities.push(
           <Entity
-              position={position}
-              selected={location.status}
-              point={pointGraphics}
-              name={`entity ${location.id}`}
-              key={index}
-            >
-              <EntityDescription>
-                <Typography variant="h3">{location.name}</Typography>
-                <Typography variant="h4">{location.description}</Typography>
-              </EntityDescription>
-            </Entity>
+            position={position}
+            selected={location.status}
+            point={pointGraphics}
+            name={`entity ${location.id}`}
+            key={index}
+          >
+            <EntityDescription>
+              <Typography variant="h3">{location.name}</Typography>
+              <Typography variant="h4">{location.description}</Typography>
+            </EntityDescription>
+          </Entity>
         );
       });
     }
@@ -83,11 +79,10 @@ function Map(props) {
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <Viewer>
-          {typeof locationsArray !== "undefined" &&
-            locationsArray.length > 0 &&
-            renderEntities()}
-        </Viewer>
+        <MapComponent
+          locationsArray={locationsArray}
+          renderEntities={renderEntities}
+        />
       </Paper>
       {isFetching && (
         <Snackbar
@@ -117,7 +112,8 @@ const styles = theme => ({
 });
 
 Map.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
+  locations: PropTypes.object.isRequired,
 };
 
 //get the pokemon state and map it to props
@@ -131,6 +127,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = {
   fetchLocations: locationOperations.fetchLocations
 };
+
 
 export default compose(
   withStyles(styles),
