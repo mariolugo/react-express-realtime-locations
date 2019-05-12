@@ -67,7 +67,7 @@ $ yarn start
 ```
 
 ## Demo
-![](./public/name-of-giphy.gif)
+![](demo.gif)
 
 
 ## Contributing
