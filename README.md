@@ -66,6 +66,46 @@ $ cd server
 $ yarn start
 ```
 
+## Project structure
+```bash
+├── public
+├── server # expressJs server
+│   ├── config 
+│   │   ├── config.json # config for the databse
+│   ├── setup
+│   │   ├── express.js #setup express server, middlewares, routes and error handlings
+│   │   └── logger.js #logger for better debugging
+│   ├── src
+│   │   └── controllers # controllers that handle crud operations
+│   │   ├── migrations # migrations made by sequelize
+│   │   ├── models # models for the database
+│   │   ├── route # endpoints for the api
+│   │   └── sockets # socket listenings and emit
+├── src #client app
+│   ├── components # pure fuctions components
+│   ├── routes # application routes
+│   ├── state
+│   │   ├── ducks
+│   │   │   ├── locations #locations redux logic (locations crud)
+│   │   │   │   ├── actions.js #actions used to handle requests
+│   │   │   │   ├── epics.js #redux observable epic used to make api calls
+│   │   │   │   ├── index.js # export operations and reducer
+│   │   │   │   ├── operations.js #import and export actions
+│   │   │   │   ├── reducers.js # all the reducers
+│   │   │   │   └── types.js # types used for actions and reducers
+│   │   │   └── items #items redux logic (items list and item)
+│   │   ├── middlewares # logger middleware for prettify actions
+│   │   ├── utils # create reducer logic
+│   │   └── store.js #set up the application store for the provider
+│   ├── utils 
+│   └── views 
+│       ├── layouts #global layout 
+│       └── pages #all pages
+├── package.json
+└── README.md
+```
+
+
 ## Demo
 ![](demo.gif)
 
