@@ -66,6 +66,19 @@ $ cd server
 $ yarn start
 ```
 
+To see the front end go to
+
+```bash
+http://localhost:3000
+```
+
+The api is:
+
+```bash
+http://localhost:4000
+```
+
+
 ## Project structure
 ```bash
 ├── public
